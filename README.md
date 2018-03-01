@@ -10,3 +10,7 @@ Mechanics
 Map
 * Randomly generated objects and weapons
 * Can see inside buildings but not outside and vice versa.
+
+Engine
+* Unity
+* PhaserJS 3 (in consideration)
