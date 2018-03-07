@@ -1,4 +1,4 @@
- fight guy: the secret of monkey island 
+# bullet star 
 Mechanics
 * Dodge (up, down, left, right) - Stamina bar affected / More you dodge the harder you get hit
 * Fog of war - Limited visibility and thunder every few seconds show whole map
