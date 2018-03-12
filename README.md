@@ -8,8 +8,4 @@ Map
 * Randomly generated objects and weapons
 * Can see inside buildings but not outside and vice versa.
 
-Engine
-* Unity
-* PhaserJS 3 (in consideration)
-
 IF THIS DOESN'T WORK OUT WE ARE MAKING A DOOM COPYCAT
