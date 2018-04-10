@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 
 public class Weapon : MonoBehavior {
     public GameObject bullet;
@@ -29,7 +29,10 @@ public class Weapon : MonoBehavior {
 
         currentClipSize--;
 
-        // TODO: Spawn projectile
+        // TODO: Spawn bullet
+        // Instantiate bullet
+        // Set bullet component such that it is travelling
+        // in same direction as parent transform
     }
 
     void BeginReload()
