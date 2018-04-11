@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 
 /**
  * Script to instantiate a random number of crates at random positions within the map dimensions
@@ -21,18 +21,46 @@ public class CrateSpawner
 
     void Start()
     {
+        // TODO: use Random.InitState(int seed) such that all players
+        // in the game are using the same seed so that crate positions are all the same
+
         GameObject templateCrate = Instantiate(crate, Vector2.zero, Quaternion.identity);
         Vector2 crateSize = templateCrate.GetComponent<Renderer>().bounds.size;
 
-        float minX = crateMinPadding;
-        float minY = crateMinPadding;
-        float maxX = mapWidthInTiles - maxX;
-        float maxY = mapHeightInTiles - maxY;
+        int numCrates = Random.Range(minCrates, maxCrates);
 
-        for (int i = 0; i < Random.Range(minCrates, maxCrates); i++)
+        // Split map into rectangles
+        float boxSize = Mathf.Sqrt(mapWidthInTiles * mapHeightInTiles / (numCrates * 3f));
+
+        int w = mapWidthInTiles / boxSize;
+        int h = mapHeightInTiles / boxSize;
+        List<int> rand = new List<int>();
+        for (int i = 0; i < w*h; i++)
         {
-            Vector2 pos = new Vector2(Random.Range(minX, maxX), Random.Range(minY, maxY));
-            Instantiate(crate, pos, Quaternion.identity);
+            rand.Add(i);
+        }
+        for (int i = 0; i < w*h - numCrates; i++)
+        {
+            rand.RemoveAt(Random.Range(0, rand.Count));
+        }
+
+        for (int x = 0; x < w; x++)
+        {
+            for (int y = 0; y < h; y++)
+            {
+                if (!rand.Contains(y*w + x))
+                {
+                    continue;
+                }
+
+                float minX = x * boxSize + crateMinPadding;
+                float minY = y * boxSize + crateMinPadding;
+                float maxX = x * (boxSize + 1) - crateMinPadding;
+                float maxY = y * (boxSize + 1) - crateMinPadding;
+
+                Vector2 pos = new Vector2(Random.Range(minX, maxX), Random.Range(minY, maxY));
+                Instantiate(crate, pos, Quaternion.identity);
+            }
         }
     }
 }
