@@ -49,6 +49,13 @@ frenzy (deal 1.5x damage; instantly reload all)
 haste (2x dash recharge speed; dash limit increases to 4; instantly refill dashes)
 
 ------------------------------------------
+Multiplayer random seed
+
+clients connect to server for matchmaking
+--> matchmaking matches clients up
+--> server sends master seed to all clients in same room
+--> master seed used for all Random instances in every script (make sure seed is set BEFORE anything random is done)
+-----------------------------------------
 Plan
 1. Map generation (crates - collision - destructible)(explosive crates)
 2. Standard mechanics (standard gun - UZI)(taking damage)
