@@ -13,7 +13,7 @@ grab --> enemy has to mash to escape; grabber can toss in a direction; toss into
 dash for speed boost; speed quickly drops off; small cooldown; can store up to 2 dashes
 hit by kb --> cant act for small time frame; time scales to amount of kb
 
-player immune to stuns for 2s after being stunned (timer starts when stun ends)
+TODO: don't have stun immunity but make sure there are no infinite combos possible
 
 shielding exactly like in smash but doesnt get smaller; changes color from blue to red to indicate strength
 
