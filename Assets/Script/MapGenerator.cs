@@ -3,16 +3,15 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /**
+ * DOESN'T WORK WITH MULTIPLAYER
  * @author Miv 3/31/18
  */
 [RequireComponent(typeof(BoxCollider2D))]
 public class MapGenerator : MonoBehaviour {
 	private class Building {
 		public Vector2 position;
-		public float leftWidth = 0;
-		public float rightWidth = 0;
-		public float topHeight = 0;
-		public float bottomHeight = 0;
+		public float width;
+		public float height;
 	}
 
 	[SerializeField]
@@ -65,8 +64,8 @@ public class MapGenerator : MonoBehaviour {
 		// Add map borders as a building for easier calculations
 		Building borders = new Building();
 		borders.position = new Vector2(0, 0);
-		borders.rightWidth = mapWidth;
-		borders.topHeight = mapHeight;
+		borders.width = mapWidth;
+		borders.height = mapHeight;
 		buildings[0] = borders;
 
 		// Randomize building spawn points
@@ -88,24 +87,53 @@ public class MapGenerator : MonoBehaviour {
 			Building building = buildings[i];
 
 			// Buildings' sides cannot exceed half of max width/height
-			float left = Mathf.Min(buildingMaxWidth/2f, getNearestEdgeToLeft(building));
-			float right = Mathf.Min(buildingMaxWidth/2f, getNearestEdgeToRight(building));
-			float top = Mathf.Min(buildingMaxHeight/2f, getNearestEdgeToTop(building));
-			float bottom = Mathf.Min(buildingMaxHeight/2f, getNearestEdgeToBottom(building));
+			float left = getNearestEdgeToLeft(building);
+			float right = getNearestEdgeToRight(building);
+			float top = getNearestEdgeToTop(building);
+			float bottom = getNearestEdgeToBottom(building);
+			Debug.Log(i + ": ");
+			Debug.Log("\tNearest edge distances:");
+			Debug.Log("\t\tright="+right);
+			Debug.Log("\t\tleft="+left);
+			Debug.Log("\t\ttop="+top);
+			Debug.Log("\t\tbottom="+bottom);
+			Debug.Log("\tPosition: " + building.position);
 
 			//TODO: find better way to make sure all buildings can be of min size
 			if (left + right < buildingMinWidth || top + bottom < buildingMinHeight) {
 				return false;
 			}
 
-			Debug.Log("Building index " + i + ": " + left + ", " + right + ", " + top + ", " + bottom);
+			// Move building spawn point to be center of nearest edges
+			float oldLeft = left;
+			float oldRight = right;
+			float oldTop = top;
+			float oldBottom = bottom;
 
-			building.leftWidth = left * RandomBuildingSizeMultiplier(Random.value);
-			building.rightWidth = right * RandomBuildingSizeMultiplier(Random.value);
-			building.topHeight = top * RandomBuildingSizeMultiplier(Random.value);
-			building.bottomHeight = bottom * RandomBuildingSizeMultiplier(Random.value);
+			building.position.Set(building.position.x + (right - left) / 2f, building.position.y + (top - bottom) / 2f);
+			// Adjust edge distances accordingly
+			right -= (oldRight - oldLeft) / 2f;
+			left += (oldRight - oldLeft) / 2f;
+			top -= (oldTop - oldBottom) / 2f;
+			bottom += (oldTop - oldBottom) / 2f;
 
-			Debug.Log("\tSet to " + building.leftWidth + ", " + building.rightWidth + ", " + building.topHeight + ", " + building.bottomHeight);
+			Debug.Log("\tAdjusted nearest edge distances:");
+			Debug.Log("\t\tright="+right);
+			Debug.Log("\t\tleft="+left);
+			Debug.Log("\t\ttop="+top);
+			Debug.Log("\t\tbottom="+bottom);
+			Debug.Log("\tPosition: " + building.position);
+			Debug.Log("\tAdjusted position: " + building.position);
+
+			building.width = Mathf.Min(buildingMaxWidth, (left + right) * RandomBuildingSizeMultiplier(Random.value));
+			building.height = Mathf.Min(buildingMaxHeight, (top + bottom) * RandomBuildingSizeMultiplier(Random.value));
+
+			Debug.Log("\tWidth=" + building.width + "\n\tHeight="+building.height);
+
+			// Adjust building position because pivot is at bottom-left
+			building.position.Set(building.position.x - building.width/2f, building.position.y - building.height/2f);
+				
+			Debug.Log("\tFinal adjusted position: " + building.position);
 		}
 		return true;
 	}
@@ -120,11 +148,9 @@ public class MapGenerator : MonoBehaviour {
 		for (int i = 1; i < numBuildings + 1; i++) {
 			Building building = buildings[i];
 
-			// Set position of building to be bottom left of building
-			Vector2 position = new Vector2(building.position.x - building.leftWidth, building.position.y - building.bottomHeight);
-			GameObject newBuilding = Instantiate(buildingNineSliceObject, position, Quaternion.identity) as GameObject;
+			GameObject newBuilding = Instantiate(buildingNineSliceObject, building.position, Quaternion.identity) as GameObject;
 			// Set size of building
-			newBuilding.GetComponent<SpriteRenderer>().size = new Vector2(building.leftWidth + building.rightWidth, building.bottomHeight + building.topHeight);
+			newBuilding.GetComponent<SpriteRenderer>().size = new Vector2(building.width, building.height);
 			//newBuilding.transform.parent = transform;
 		}
 
@@ -133,51 +159,63 @@ public class MapGenerator : MonoBehaviour {
 	}
 
 	float getNearestEdgeToRight(Building source) {
-		Debug.Log("Right");
+		//Debug.Log("Right");
 		float min = mapWidth;
 		foreach (Building building in buildings) {
 			if (building.Equals(source)) {
 				continue;
 			}
-			Debug.Log("min = " + min);
-			Debug.Log(source.position.x + " compared to " + (building.position.x - building.leftWidth - buildingMinPadding) + " and " + (building.position.x + building.rightWidth + buildingMinPadding));
-			if (source.position.x <= building.position.x - building.leftWidth - buildingMinPadding) {
-				if (building.position.x - building.leftWidth - source.position.x - buildingMinPadding < min) {
-					min = building.position.x - building.leftWidth - source.position.x - buildingMinPadding;
+
+			// Building must be able to collide on y-axis
+			if (!yOverlap(source, building)) {
+				continue;
+			}
+
+			//Debug.Log("min = " + min);
+			//Debug.Log(source.position.x + " compared to " + (building.position.x - building.leftWidth - buildingMinPadding) + " and " + (building.position.x + building.rightWidth + buildingMinPadding));
+			if (source.position.x <= building.position.x - buildingMinPadding) {
+				if (building.position.x - source.position.x - buildingMinPadding < min) {
+					min = building.position.x - source.position.x - buildingMinPadding;
 				}
 			} 
-			if (source.position.x <= building.position.x + building.rightWidth + buildingMinPadding) {
-				if (building.position.x + building.rightWidth - source.position.x + buildingMinPadding < min) {
-					min = building.position.x + building.rightWidth - source.position.x + buildingMinPadding;
+			if (source.position.x <= building.position.x + building.width + buildingMinPadding) {
+				if (building.position.x + building.width - source.position.x + buildingMinPadding < min) {
+					min = building.position.x + building.width - source.position.x + buildingMinPadding;
 				}
 			}
-			Debug.Log("min -> " + min);
+			//Debug.Log("min -> " + min);
 		}
 
 		return min;
 	}
 
 	float getNearestEdgeToLeft(Building source) {
-		Debug.Log("Left");
+		//Debug.Log("Left");
 
 		float min = mapWidth;
 		foreach (Building building in buildings) {
 			if (building.Equals(source)) {
 				continue;
 			}
-			Debug.Log("min = " + min);
-			Debug.Log(source.position.x + " compared to " + (building.position.x - building.leftWidth - buildingMinPadding) + " and " + (building.position.x + building.rightWidth + buildingMinPadding));
-			if (source.position.x >= building.position.x - building.leftWidth - buildingMinPadding) {
-				if (source.position.x - (building.position.x - building.leftWidth - buildingMinPadding) < min) {
-					min = source.position.x - (building.position.x - building.leftWidth - buildingMinPadding);
+
+			// Building must be able to collide on y-axis
+			if (!yOverlap(source, building)) {
+				continue;
+			}
+
+			//Debug.Log("min = " + min);
+			//Debug.Log(source.position.x + " compared to " + (building.position.x - buildingMinPadding) + " and " + (building.position.x + building.width + buildingMinPadding));
+			if (source.position.x >= building.position.x - buildingMinPadding) {
+				if (source.position.x - (building.position.x - buildingMinPadding) < min) {
+					min = source.position.x - (building.position.x - buildingMinPadding);
 				}
 			} 
-			if (source.position.x >= building.position.x + building.rightWidth + buildingMinPadding) {
-				if (source.position.x - (building.position.x + building.rightWidth + buildingMinPadding) < min) {
-					min = building.position.x + building.rightWidth - source.position.x + buildingMinPadding;
+			if (source.position.x >= building.position.x + building.width + buildingMinPadding) {
+				if (source.position.x - (building.position.x + building.width + buildingMinPadding) < min) {
+					min = building.position.x + building.width - source.position.x + buildingMinPadding;
 				}
 			}
-			Debug.Log("min -> " + min);
+			//Debug.Log("min -> " + min);
 		}
 
 		return min;
@@ -190,14 +228,19 @@ public class MapGenerator : MonoBehaviour {
 				continue;
 			}
 
-			if (source.position.y <= building.position.y - building.bottomHeight - buildingMinPadding) {
-				if (building.position.y - building.bottomHeight - source.position.y - buildingMinPadding < min) {
-					min = building.position.y - building.bottomHeight - source.position.y - buildingMinPadding;
+			// Building must be able to collide on x-axis
+			if (!xOverlap(source, building)) {
+				continue;
+			}
+
+			if (source.position.y <= building.position.y - buildingMinPadding) {
+				if (building.position.y - source.position.y - buildingMinPadding < min) {
+					min = building.position.y - source.position.y - buildingMinPadding;
 				}
 			} 
-			if (source.position.y <= building.position.y + building.topHeight + buildingMinPadding) {
-				if (building.position.y + building.topHeight - source.position.y + buildingMinPadding < min) {
-					min = building.position.y + building.topHeight - source.position.y + buildingMinPadding;
+			if (source.position.y <= building.position.y + building.height + buildingMinPadding) {
+				if (building.position.y + building.height - source.position.y + buildingMinPadding < min) {
+					min = building.position.y + building.height - source.position.y + buildingMinPadding;
 				}
 			}
 		}
@@ -212,18 +255,33 @@ public class MapGenerator : MonoBehaviour {
 				continue;
 			}
 
-			if (source.position.y >= building.position.y - building.bottomHeight - buildingMinPadding) {
-				if (source.position.y - (building.position.y - building.bottomHeight - buildingMinPadding) < min) {
-					min = source.position.y - (building.position.y - building.bottomHeight - buildingMinPadding);
+			// Building must be able to collide on x-axis
+			if (!xOverlap(source, building)) {
+				continue;
+			}
+
+			if (source.position.y >= building.position.y - buildingMinPadding) {
+				if (source.position.y - (building.position.y - buildingMinPadding) < min) {
+					min = source.position.y - (building.position.y - buildingMinPadding);
 				}
 			} 
-			if (source.position.y >= building.position.y + building.topHeight + buildingMinPadding) {
-				if (source.position.y - (building.position.y + building.topHeight + buildingMinPadding) < min) {
-					min = source.position.y - (building.position.y + building.topHeight + buildingMinPadding);
+			if (source.position.y >= building.position.y + building.height + buildingMinPadding) {
+				if (source.position.y - (building.position.y + building.height + buildingMinPadding) < min) {
+					min = source.position.y - (building.position.y + building.height + buildingMinPadding);
 				}
 			}
 		}
 
 		return min;
+	}
+
+	bool yOverlap(Building a, Building b) {
+		return true;
+		//return a.position.y < b.position.y + Mathf.Max(buildingMinHeight, b.height) + buildingMinPadding && a.position.y + Mathf.Max(buildingMinHeight, a.height) + buildingMinPadding > b.position.y;
+	}
+
+	bool xOverlap(Building a, Building b) {
+		return true;
+		//return a.position.x < b.position.x + Mathf.Max(buildingMinWidth, b.width) + buildingMinPadding && a.position.x + Mathf.Max(buildingMinWidth, a.width) + buildingMinPadding > b.position.x;
 	}
 }

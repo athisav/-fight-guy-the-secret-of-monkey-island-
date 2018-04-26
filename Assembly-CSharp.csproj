@@ -51,10 +51,14 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+     <Compile Include="Assets\Script\Bullet.cs" />
+     <Compile Include="Assets\Script\CameraController.cs" />
+     <Compile Include="Assets\Script\CrateSpawner.cs" />
      <Compile Include="Assets\Script\FillGround.cs" />
      <Compile Include="Assets\Script\MapGenerator.cs" />
      <Compile Include="Assets\Script\PlayerControl.cs" />
-     <Compile Include="Assets\Script\TiledBackground.cs" />
+     <Compile Include="Assets\Script\Weapon.cs" />
+     <Compile Include="Assets\TilesManager.cs" />
  <Reference Include="UnityEngine.UIAutomation">
  <HintPath>/Applications/Unity/Unity.app/Contents/UnityExtensions/Unity/UIAutomation/UnityEngine.UIAutomation.dll</HintPath>
  </Reference>

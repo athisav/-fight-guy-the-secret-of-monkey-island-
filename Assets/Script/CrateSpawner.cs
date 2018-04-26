@@ -1,4 +1,6 @@
-using System;
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
 
 /**
  * Script to instantiate a random number of crates at random positions within the map dimensions
@@ -9,7 +11,7 @@ using System;
  * A crate's position is not necessarily an integer number.
  * @author Miv
  */
-public class CrateSpawner
+public class CrateSpawner : MonoBehaviour
 {
     public GameObject crate;
     public int mapWidthInTiles;
@@ -32,8 +34,8 @@ public class CrateSpawner
         // Split map into rectangles
         float boxSize = Mathf.Sqrt(mapWidthInTiles * mapHeightInTiles / (numCrates * 3f));
 
-        int w = mapWidthInTiles / boxSize;
-        int h = mapHeightInTiles / boxSize;
+		int w = (int)(mapWidthInTiles / boxSize);
+		int h = (int)(mapHeightInTiles / boxSize);
         List<int> rand = new List<int>();
         for (int i = 0; i < w*h; i++)
         {
@@ -53,13 +55,14 @@ public class CrateSpawner
                     continue;
                 }
 
-                float minX = x * boxSize + crateMinPadding;
-                float minY = y * boxSize + crateMinPadding;
-                float maxX = x * (boxSize + 1) - crateMinPadding;
-                float maxY = y * (boxSize + 1) - crateMinPadding;
+				float minX = x * boxSize + crateMinPadding;
+				float minY = y * boxSize + crateMinPadding;
+				float maxX = (x + 1) * boxSize - crateMinPadding - crateSize.x;
+				float maxY = (y + 1) * boxSize - crateMinPadding - crateSize.y;
 
                 Vector2 pos = new Vector2(Random.Range(minX, maxX), Random.Range(minY, maxY));
                 Instantiate(crate, pos, Quaternion.identity);
+				Debug.Log(pos);
             }
         }
     }
