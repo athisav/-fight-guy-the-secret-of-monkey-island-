@@ -249,7 +249,7 @@ GameObject:
   - component: {fileID: 190564268}
   - component: {fileID: 190564267}
   - component: {fileID: 190564269}
-  m_Layer: 10
+  m_Layer: 17
   m_Name: Fill Tile
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -556,6 +556,52 @@ Prefab:
       propertyPath: m_LocalScale.y
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 114947820398278744, guid: 955aa87b3c121f04ab831d6b783cfb09,
+        type: 2}
+      propertyPath: gunPrefab
+      value: 
+      objectReference: {fileID: 1440567321669680, guid: d3d20005037b84892abb26de3a71337c,
+        type: 2}
+    - target: {fileID: 50212856654909590, guid: 955aa87b3c121f04ab831d6b783cfb09,
+        type: 2}
+      propertyPath: m_Mass
+      value: 0.0225
+      objectReference: {fileID: 0}
+    - target: {fileID: 212807671427842456, guid: 955aa87b3c121f04ab831d6b783cfb09,
+        type: 2}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
+    - target: {fileID: 61582604569991254, guid: 955aa87b3c121f04ab831d6b783cfb09,
+        type: 2}
+      propertyPath: m_SpriteTilingProperty.border.x
+      value: 0.049999997
+      objectReference: {fileID: 0}
+    - target: {fileID: 61582604569991254, guid: 955aa87b3c121f04ab831d6b783cfb09,
+        type: 2}
+      propertyPath: m_SpriteTilingProperty.border.y
+      value: 0.049999997
+      objectReference: {fileID: 0}
+    - target: {fileID: 61582604569991254, guid: 955aa87b3c121f04ab831d6b783cfb09,
+        type: 2}
+      propertyPath: m_SpriteTilingProperty.border.z
+      value: 0.049999997
+      objectReference: {fileID: 0}
+    - target: {fileID: 61582604569991254, guid: 955aa87b3c121f04ab831d6b783cfb09,
+        type: 2}
+      propertyPath: m_SpriteTilingProperty.border.w
+      value: 0.049999997
+      objectReference: {fileID: 0}
+    - target: {fileID: 61582604569991254, guid: 955aa87b3c121f04ab831d6b783cfb09,
+        type: 2}
+      propertyPath: m_SpriteTilingProperty.oldSize.x
+      value: 0.16
+      objectReference: {fileID: 0}
+    - target: {fileID: 61582604569991254, guid: 955aa87b3c121f04ab831d6b783cfb09,
+        type: 2}
+      propertyPath: m_SpriteTilingProperty.oldSize.y
+      value: 0.16
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 955aa87b3c121f04ab831d6b783cfb09, type: 2}
   m_IsPrefabParent: 0
@@ -575,7 +621,7 @@ GameObject:
   - component: {fileID: 1024106007}
   - component: {fileID: 1024106006}
   - component: {fileID: 1024106005}
-  m_Layer: 9
+  m_Layer: 16
   m_Name: Crate
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -805,7 +851,7 @@ GameObject:
   - component: {fileID: 1398332547}
   - component: {fileID: 1398332546}
   - component: {fileID: 1398332545}
-  m_Layer: 0
+  m_Layer: 17
   m_Name: Boundary Tile
   m_TagString: Untagged
   m_Icon: {fileID: 0}

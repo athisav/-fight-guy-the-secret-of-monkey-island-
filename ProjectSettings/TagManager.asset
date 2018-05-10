@@ -13,16 +13,16 @@ TagManager:
   - UI
   - 
   - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - Player Weapon
+  - Bullet
   - Player
   - Building
   - Ground
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
   - 
   - 
   - 
@@ -49,4 +49,10 @@ TagManager:
     locked: 0
   - name: Player
     uniqueID: 1877746965
+    locked: 0
+  - name: Bullet
+    uniqueID: 2486120333
+    locked: 0
+  - name: Player Weapon
+    uniqueID: 503241605
     locked: 0

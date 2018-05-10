@@ -12,6 +12,8 @@ public class CameraController : MonoBehaviour {
 	void Start() {
 		// Initial offset depends on how scene was set up
 		offset = transform.position - target.transform.position;
+		// Deactivate player dummy
+		target.SetActive(false);
 	}
 	
 	// Update is called once per frame

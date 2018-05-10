@@ -4,18 +4,15 @@ using UnityEngine.Networking;
 public class Weapon : NetworkBehaviour {
     public GameObject bulletPrefab;
 
-	[Tooltip("Where the bullet spawns with respect to the weapon, assuming the weapon is rotated 0 degrees")]
+	// Where the bullet spawns with respect to the weapon
 	public Vector3 bulletSpawnOffset;
-	[Tooltip("Where the weapon is with respect to the player, assuming the player is rotated 0 degrees")]
-	public Vector3 weaponOffset;
 
-	[Tooltip("In seconds")]
+    // In seconds
     public float reloadRate;
     public float attackRate;
     public float initialAttackDelay;
-	[Tooltip("Set clip size to -1 for infinite size")]
+    // Set clip size to -1 for infinite size
     public int maxClipSize;
-	public int initialClipSize;
 
     private bool isAttacking;
     private bool isReloading;
@@ -28,14 +25,7 @@ public class Weapon : NetworkBehaviour {
 
     void Start() 
 	{
-		currentClipSize = initialClipSize;
-
-		// Infinite ammo
-		if (maxClipSize == -1) {
-			currentClipSize = -1;
-		}
-
-		transform.localPosition = weaponOffset;
+		// TODO+ attach transform to local player gameobject
     }
 
 	[Command]
@@ -46,14 +36,15 @@ public class Weapon : NetworkBehaviour {
 
         currentClipSize--;
 
-		Vector3 gunPos = transform.position;
-		Vector3 playerDirection = transform.parent.forward;
-		Quaternion playerRotation = transform.parent.rotation;
 
-		Vector3 rotatedBulletSpawnOffset = playerRotation * bulletSpawnOffset;
-		Vector3 spawnPos = gunPos + rotatedBulletSpawnOffset;
+		Vector3 playerPos = transform.position;
+		Vector3 playerDirection = transform.forward;
+		Quaternion playerRotation = transform.rotation;
+		float spawnDistance = 50;
 
-		GameObject bullet = Instantiate(bulletPrefab, spawnPos, playerRotation);
+		Vector3 spawnPos = playerPos + playerDirection*spawnDistance;
+
+		GameObject bullet = Instantiate(bulletPrefab, spawnPos, playerRotation);        
 		NetworkServer.Spawn(bullet);
 	}
 
@@ -75,35 +66,28 @@ public class Weapon : NetworkBehaviour {
 
     void Update()
     {
-		
-        if (Input.GetButtonUp("Fire1"))
+		/*
+        if (Input.GetMouseButtonUp(0))
         {
             isAttacking = false;
             return;
+        }*/
+
+
+        if (Input.GetMouseButtonDown(0))
+        {
+            //timeUntilNextAttack = initialAttackDelay + attackRate;
+            //isAttacking = true;
+			CmdAttack();
         }
 
-		if (Input.GetButtonDown("Fire1"))
-        {
-			timeUntilNextAttack += initialAttackDelay;
-            isAttacking = true;
-        }
-			
+		/*
         if (Input.GetButtonDown("Reload1"))
         {
             CmdBeginReload();
         }
 
-
-		float deltaTime = Time.deltaTime;
-
-		// Decrease time until next attack if nothing is held
-		if (!Input.GetButton("Fire1") && !Input.GetButton("Reload1")) {
-			timeUntilNextAttack -= deltaTime;
-			if (timeUntilNextAttack < 0) {
-				timeUntilNextAttack = 0;
-			}
-		}
-
+        float deltaTime = Time.deltaTime;
         if (isReloading)
         {
             timeUntilReloadFinishes -= deltaTime;
@@ -126,6 +110,7 @@ public class Weapon : NetworkBehaviour {
                     CmdAttack();
                 }
             }
-        }
+        }*/
+
     }
 }

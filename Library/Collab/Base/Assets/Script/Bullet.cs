@@ -9,8 +9,9 @@ public class Bullet : MonoBehaviour {
 
 	void Start () {
 		// Set initial speed
-		//Debug.Log(transform.rotation.eulerAngles);
-		gameObject.GetComponent<Rigidbody2D>().velocity = transform.rotation * new Vector2(initialSpeed, 0);
+		//gameObject.GetComponent<Rigidbody2D>().velocity = transform.forward * initialSpeed;
+		// Adjust transform so that bullet spawns at an offset with respect to the parent weapon
+		transform.position = transform.position + transform.parent.gameObject.GetComponent<Weapon>().bulletSpawnOffset;
 	}
 
 	void Update () {
